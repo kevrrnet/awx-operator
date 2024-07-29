@@ -1,0 +1,29 @@
+name: Sync to Bitbucket
+
+on:
+  push:
+    branches:
+      - devel
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          ref: devel
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add Bitbucket remote
+        run: |
+          git remote add bitbucket git@bitbucket.cd.sac.int.threatmetrix.com:7999/~caik0000/test-repo.git
+
+      - name: Push to Bitbucket master
+        run: |
+          git push bitbucket devel:refs/heads/master --force
